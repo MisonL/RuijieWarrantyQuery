@@ -76,11 +76,15 @@ graph TD
     *   安装 Python 3.6+。
     *   安装 Chrome 浏览器。
     *   运行 `pip install -r requirements.txt` 安装所有依赖。
-2.  **准备Excel文件：**
-    *   提供包含序列号的Excel文件。
-    *   在 `config.ini` 中配置 `excel_file_path`, `sheet_name`, `sn_column_name`。
+    *   根据需要手动安装 AI 库 (如 `google-generativeai` 或 `openai`)。
+2.  **准备Excel文件 (`Serial-Number.xlsx`)：**
+    *   项目根目录下已包含一个名为 `Serial-Number.xlsx` 的模板文件。
+    *   打开此文件，找到 `config.ini` 中 `sn_column_name` 指定的列（默认为 "Serial Number"）。
+    *   **将您需要查询的锐捷设备序列号填入该列，每个序列号占一行。**
+    *   确保 `config.ini` 中的 `excel_file_path` 指向此文件（或您修改后的文件），并且 `sheet_name` 配置正确。
 3.  **配置 `config.ini`：**
-    *   配置 `[General]` 部分（`query_delay`, `save_interval`, **`max_query_attempts`**, **`max_captcha_retries`**）。`chrome_driver_path` 可选。驱动查找顺序：`config.ini` -> `drivers/` -> 自动下载/复制/清理。
+    *   **重要：** 从 `config.example.ini` 复制创建 `config.ini` 并填入您自己的 API 密钥。
+    *   检查并配置 `[General]` 部分（`excel_file_path`, `sheet_name`, `sn_column_name`, `query_delay`, `save_interval`, **`max_query_attempts`**, **`max_captcha_retries`**）。`chrome_driver_path` 可选。驱动查找顺序：`config.ini` -> `drivers/` -> 自动下载/复制/清理。
     *   配置 `[AI_Settings]` 部分（`retry_attempts`, `retry_delay`, `rate_limit_delay`, `ai_test_timeout`）。
     *   **为每个 AI 渠道实例创建 `channel_N_` 配置项** (例如 `channel_1_api_type`, `channel_1_api_key` 等)。程序将自动发现并按数字顺序尝试这些渠道。
     *   检查 `[ResultColumns]` 部分的映射关系。

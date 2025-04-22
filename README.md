@@ -79,9 +79,9 @@
     程序的所有配置都集中在项目根目录下的 `config.ini` 文件中。请打开该文件，根据您的实际情况修改以下配置项：
 
     *   📂 **`[General]` 部分:**
-        *   `excel_file_path`: 您的 Excel 文件路径，应包含待查询的序列号。
-        *   `sheet_name`: 包含序列号的工作表名称。
-        *   `sn_column_name`: Excel 文件中包含序列号的列的名称。
+        *   `excel_file_path`: **(重要)** 指定包含待查询序列号的 Excel 文件路径。项目已包含一个名为 `Serial-Number.xlsx` 的模板文件，您可以直接使用或修改此配置指向其他文件。
+        *   `sheet_name`: **(重要)** 指定 Excel 文件中包含序列号的工作表名称。请确保 `Serial-Number.xlsx` 或您指定的文件中存在此工作表。
+        *   `sn_column_name`: **(重要)** 指定工作表中包含设备序列号的列的**确切名称**。请打开 `Serial-Number.xlsx` 文件，将您要查询的设备序列号填入此列（默认为 "Serial Number" 列），每个序列号占一行。程序将从此列读取数据。
         *   `query_delay`: 每次查询之间的延时（秒），建议设置一个合理的数值以避免请求过快被屏蔽。
         *   `save_interval`: 处理多少个序列号后保存一次 Excel 文件，防止程序中断数据丢失。设置为 0 或负数则只在程序结束时保存。**（推荐设置，避免频繁写入）**
         *   `chrome_driver_path`: **(可选)** 如果您想手动指定 ChromeDriver 的完整路径，请修改此项。程序会优先检查此路径。

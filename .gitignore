@@ -5,7 +5,6 @@ config.ini
 app.log
 
 # Data files
-Serial-Number.xlsx
 
 # Python virtual environment
 venv/
