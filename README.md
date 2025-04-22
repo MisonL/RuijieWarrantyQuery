@@ -1,5 +1,6 @@
 # ✨ 锐捷网络设备保修期批量查询工具 ✨
 
+[![Version](https://img.shields.io/badge/Version-v1.0.0-blue)](https://github.com/MisonL/RuijieWarrantyQuery/releases/tag/v1.0.0) <!-- 假设你的 GitHub 仓库是 MisonL/RuijieWarrantyQuery -->
 [![Python Version](https://img.shields.io/badge/Python-3.6%2B-blue)](https://www.python.org/downloads/)
 [![Dependencies](https://img.shields.io/badge/Dependencies-requirements.txt-brightgreen)](requirements.txt)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
