@@ -21,3 +21,6 @@ __pycache__/
 # IDE specific files
 .idea/
 .vscode/
+
+# Driver files
+drivers/
