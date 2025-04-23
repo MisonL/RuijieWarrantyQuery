@@ -19,7 +19,8 @@ class RuijieQueryApp:
         self.config_manager = config_manager
         self.general_config = self.config_manager.get_general_config()
         # 获取新的AI配置结构
-        self.ai_config = self.config_manager.get_ai_config()
+        self.ai_config = self.config_manager.get_ai_config() # AI 相关设置 (重试, 延时, 渠道)
+        self.captcha_config = self.config_manager.get_captcha_config() # 新增：获取验证码设置
         self.result_columns = self.config_manager.get_result_columns()
         self.logging_config = self.config_manager.get_logging_config()  # 获取日志配置
         self.target_url = "https://www.ruijie.com.cn/fw/bx/"  # 锐捷官网固定 URL
@@ -39,11 +40,12 @@ class RuijieQueryApp:
         self.webdriver_manager = WebDriverManager(
             self.general_config["chrome_driver_path"], self.logger  # 传递日志记录器
         )
-        # 将通用AI设置和渠道列表传递给 CaptchaSolver
+        # 将验证码设置、通用AI设置和渠道列表传递给 CaptchaSolver
         self.captcha_solver = CaptchaSolver(
-            self.ai_config, # 传递包含通用设置和渠道列表的字典
-            self.ai_config["channels"], # 传递渠道列表
-            self.logger,  # 传递日志记录器
+            self.captcha_config, # 传递验证码设置
+            self.ai_config,      # 传递 AI 通用设置 (重试, 延时等)
+            self.ai_config["channels"], # 传递 AI 渠道列表
+            self.logger,         # 传递日志记录器
         )
         # 传递 config 对象和日志记录器给 RuijieQueryPage
         self.query_page = None  # 在运行过程中初始化
@@ -233,19 +235,19 @@ class RuijieQueryApp:
                         break # 获取图片失败，跳出验证码重试循环
 
                     # 解决验证码
-                    self.logger.info("尝试使用 AI 识别验证码...")
-                    ai_start_time = time.time() # 记录 AI 识别开始时间
+                    self.logger.info("尝试识别验证码...")
+                    recognition_start_time = time.time() # 记录识别开始时间
                     captcha_solution = self.captcha_solver.solve_captcha(captcha_image_data)
-                    ai_end_time = time.time() # 记录 AI 识别结束时间
-                    ai_recognition_time = ai_end_time - ai_start_time
-                    self.logger.info(f"AI 验证码识别耗时: {ai_recognition_time:.2f} 秒。")
+                    recognition_end_time = time.time() # 记录识别结束时间
+                    recognition_time = recognition_end_time - recognition_start_time
+                    self.logger.info(f"验证码识别耗时: {recognition_time:.2f} 秒。")
 
                     if captcha_solution:
-                        self.logger.info("AI 验证码识别成功。")
+                        self.logger.info("验证码识别成功。")
                         break  # 识别成功，跳出验证码重试循环
                     else:
                         self.logger.warning(
-                            f"AI 验证码识别失败 (验证码重试 {captcha_retry + 1}/"
+                            f"验证码识别失败 (验证码重试 {captcha_retry + 1}/"
                             f"{max_captcha_retries + 1})。"
                         )
                         if captcha_retry < max_captcha_retries:
@@ -257,8 +259,8 @@ class RuijieQueryApp:
                             self.logger.error("达到最大验证码识别重试次数。")
 
                 if not captcha_solution:
-                    self.logger.error("AI 验证码识别最终失败，跳过当前查询尝试。")
-                    results["查询状态"] = "AI 验证码识别失败"
+                    self.logger.error("验证码识别最终失败，跳过当前查询尝试。")
+                    results["查询状态"] = "验证码识别失败"
                     # 不返回，继续外层循环进行下一次查询尝试
 
                 else: # 如果验证码识别成功

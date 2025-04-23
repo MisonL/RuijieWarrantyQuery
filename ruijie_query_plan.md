@@ -122,3 +122,59 @@ graph TD
 *   **PageObjects** 中增强了表格解析和错误检查的鲁棒性。
 *   **日志支持文件轮转**，防止文件过大。
 *   **保存逻辑优化**，根据 `save_interval` 执行，避免频繁写入。
+
+## 集成 ddddocr 计划
+
+**目标：**
+
+1.  引入 `ddddocr` 作为本地验证码识别选项。
+2.  允许用户在 `config.ini` 中配置优先使用 `ddddocr` 还是 AI。
+3.  允许用户在 `config.ini` 中独立启用或禁用 `ddddocr` 和 AI。
+4.  实现识别逻辑：优先尝试配置的首选方法，如果失败或禁用，则尝试备用方法（如果启用）。
+
+**实施步骤：**
+
+1.  **更新依赖 (`requirements.txt`)**:
+    *   添加 `ddddocr` 到 `requirements.txt` 文件中。
+
+2.  **修改配置文件 (`config.example.ini` 和 `config.ini`)**:
+    *   创建一个新的 `[CaptchaSettings]` 配置节。
+    *   添加以下配置项：
+        *   `captcha_primary_solver = ddddocr`  (选项: 'ddddocr', 'ai'; 默认 'ddddocr')
+        *   `captcha_enable_ddddocr = True`   (选项: True, False; 默认 True)
+        *   `captcha_enable_ai = True`        (选项: True, False; 默认 True)
+        *   `ddddocr_max_attempts = 3`        (ddddocr 识别的最大尝试次数)
+    *   更新 `config.example.ini` 以包含这些新选项和注释。用户需要相应地更新 `config.ini`。
+
+3.  **修改配置管理器 (`ruijie_query/config.py`)**:
+    *   在 `ConfigManager` 类中添加一个新的方法 `get_captcha_config()` 来读取 `[CaptchaSettings]` 配置节中的新选项，并进行适当的类型转换和默认值处理。
+
+4.  **修改验证码求解器 (`ruijie_query/captcha_solver.py`)**:
+    *   **导入**: 导入 `ddddocr` 库。
+    *   **初始化 (`__init__`)**:
+        *   接收新的 `captcha_config` 参数。
+        *   根据 `captcha_enable_ddddocr` 配置，尝试初始化 `ddddocr.DdddOcr()` 实例。如果失败（例如，缺少模型文件），记录警告并内部禁用 ddddocr。
+        *   存储 `captcha_config` 以供后续使用。
+    *   **核心逻辑 (`solve_captcha`)**:
+        *   重构此方法以实现新的识别策略。
+        *   根据 `captcha_primary_solver` 决定首先调用哪个识别器 (`_solve_with_ddddocr` 或 `_solve_with_ai`)。
+        *   在调用任何识别器之前，检查其对应的 `enable` 配置 (`captcha_enable_ddddocr` 或 `captcha_enable_ai`) 以及是否已成功初始化 (对于 ddddocr)。
+        *   如果首选识别器启用并成功识别，返回结果。
+        *   如果首选识别器失败、被禁用或未初始化，则检查备用识别器是否启用。
+        *   如果备用识别器启用，则尝试使用它进行识别。
+        *   如果两个识别器都失败或都被禁用/未初始化，则返回 `None`。
+    *   **新方法 (`_solve_with_ddddocr`)**:
+        *   创建一个私有方法来封装调用 `ddddocr` 实例进行识别的逻辑。
+        *   包含基于 `ddddocr_max_attempts` 的重试逻辑和错误处理。
+    *   **重构 AI 逻辑 (`_solve_with_ai`)**:
+        *   将现有的 AI 识别逻辑（包括渠道遍历和重试）移到一个新的私有方法 `_solve_with_ai` 中。
+    *   **日志**: 更新日志记录，清晰地显示正在使用哪个识别器、尝试次数以及结果。
+
+5.  **更新主应用逻辑 (例如 `main.py` 或 `ruijie_query/app.py`)**:
+    *   修改创建 `CaptchaSolver` 实例的代码，从 `ConfigManager` 获取 `captcha_config` 并传递给 `CaptchaSolver` 的构造函数。
+
+**预期结果：**
+
+*   项目将能够使用 `ddddocr` 进行本地验证码识别。
+*   用户可以通过 `config.ini` 灵活控制验证码识别策略（优先顺序、启用/禁用）。
+*   代码结构将更清晰，将不同的识别逻辑分离开。

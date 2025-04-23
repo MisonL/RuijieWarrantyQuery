@@ -1,6 +1,6 @@
 # ✨ 锐捷网络设备保修期批量查询工具 ✨
 
-[![Version](https://img.shields.io/badge/Version-v1.0.0-blue)](https://github.com/MisonL/RuijieWarrantyQuery/releases/tag/v1.0.0) <!-- 假设你的 GitHub 仓库是 MisonL/RuijieWarrantyQuery -->
+[![Version](https://img.shields.io/badge/Version-v1.1.0-blue)](https://github.com/MisonL/RuijieWarrantyQuery/releases/tag/v1.1.0) <!-- 假设你的 GitHub 仓库是 MisonL/RuijieWarrantyQuery -->
 [![Python Version](https://img.shields.io/badge/Python-3.6%2B-blue)](https://www.python.org/downloads/)
 [![Dependencies](https://img.shields.io/badge/Dependencies-requirements.txt-brightgreen)](requirements.txt)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
@@ -16,7 +16,9 @@
 
 -   📄 **批量读取：** 从 Excel 文件中读取待查询的序列号列表。
 -   🌐 **自动化查询：** 自动访问锐捷官网查询页面。
--   🤖 **智能验证码：** 利用配置的多个通用 AI API 渠道自动处理验证码，支持多种 AI 服务（Gemini, OpenAI 兼容等）。
+-   🤖 **智能验证码：**
+    -   **v1.1.0 新增:** 支持 `ddddocr` 本地识别库，可配置优先使用本地识别或 AI。
+    -   利用配置的多个通用 AI API 渠道自动处理验证码，支持多种 AI 服务（Gemini, OpenAI 兼容等）。
 -   📊 **结果回写：** 将查询到的保修信息自动回写到 Excel 文件中。
 -   ⚡ **可用性测试：** 程序启动时自动测试 AI 渠道可用性，优先使用稳定可靠的接口。
 -   💪 **鲁棒性强：** 包含错误处理和**可配置的查询/验证码重试机制**，提高查询成功率。**表格解析逻辑已增强，能动态适应不同的页面结构。错误检查更全面。**
@@ -24,6 +26,7 @@
 -   💾 **智能保存：** 根据配置的间隔 (`save_interval`) 保存进度，防止意外中断导致数据丢失，**避免了频繁写入文件**。
 -   ✨ **AI 响应优化：** 自动清理 AI 返回的验证码文本，提高识别准确率。
 -   📜 **日志轮转：** 支持配置日志文件大小和备份数量，实现自动轮转，防止日志文件过大。
+-   🔧 **灵活配置 (v1.1.0 新增):** 可在 `config.ini` 中独立启用/禁用 ddddocr 和 AI 识别。
 
 告别繁琐的手动操作，让您的工作更高效！
 
@@ -57,7 +60,7 @@
     ```bash
     pip install -r requirements.txt
     ```
-    这会安装 `pandas`, `selenium`, `openpyxl`, `webdriver-manager`。
+    这会安装 `pandas`, `selenium`, `openpyxl`, `webdriver-manager` **以及 v1.1.0 新增的 `ddddocr`**。
 
     **根据您在 `config.ini` 中配置的 AI 服务，您还需要手动安装相应的 AI 库：**
 
@@ -203,6 +206,12 @@
         *   `log_max_bytes`: **(新增)** 日志文件最大大小，支持 KB/MB 单位 (例如 `1024KB`, `1MB`)。
         *   `log_backup_count`: **(新增)** 保留的备份日志文件数量。
 
+    *   ⚙️ **`[CaptchaSettings]` 部分 (v1.1.0 新增):**
+        *   `captcha_primary_solver`: **(重要)** 设置优先使用的验证码识别器。可选值为 `ddddocr` (优先使用本地 ddddocr) 或 `ai` (优先使用配置的 AI 渠道)。默认为 `ddddocr`。
+        *   `captcha_enable_ddddocr`: 是否启用 ddddocr 本地识别。可选值为 `True` 或 `False`。默认为 `True`。如果设为 `False`，即使 `captcha_primary_solver` 设为 `ddddocr`，也会跳过 ddddocr。
+        *   `captcha_enable_ai`: 是否启用 AI 识别。可选值为 `True` 或 `False`。默认为 `True`。如果设为 `False`，即使 `captcha_primary_solver` 设为 `ai`，也会跳过 AI 识别。
+        *   `ddddocr_max_attempts`: 使用 ddddocr 识别单个验证码图片时的最大尝试次数。默认为 `3`。
+
 ## ▶️ 运行程序
 
 在完成 `config.ini` 配置后，打开终端或命令行界面，导航到项目根目录，然后运行以下命令启动程序：
@@ -224,6 +233,31 @@ python main.py
 *   **重要：** `ruijie_query/page_objects.py` 文件中的网页元素定位器、结果解析逻辑 (`parse_query_result` 方法，**现已增强为动态解析表头**) 和错误检查逻辑 (`_check_error_message` 方法，**已增强**) 需要根据锐捷官网实际的页面结构进行手动完善和测试。代码中已添加 `TODO` 注释提示这些位置。
 *   **WebDriver 管理：** 程序现在会优先使用您在 `config.ini` 或项目 `drivers` 目录中指定的 ChromeDriver。如果都找不到，它会自动下载驱动，将其复制到项目 `drivers` 目录，使用该副本，并尝试删除缓存。
 *   **保存机制：** 程序现在根据 `config.ini` 中的 `save_interval` 配置来保存 Excel 文件，避免了不必要的频繁写入。
+*   **ddddocr 使用 (v1.1.0 新增):** 如果您选择启用 `ddddocr`，请确保已通过 `pip install -r requirements.txt` 或 `pip install ddddocr` 安装了该库。程序会根据 `[CaptchaSettings]` 中的配置决定是否以及何时使用 ddddocr。
+
+## 📝 版本历史
+
+**v1.1.0 (2025-04-23)**
+
+*   ✨ **新增:** 集成 `ddddocr` 本地验证码识别库。
+*   ⚙️ **新增:** 在 `config.ini` 中添加 `[CaptchaSettings]` 配置节，允许用户：
+    *   选择优先使用的验证码识别器 (`captcha_primary_solver`: `ddddocr` 或 `ai`)。
+    *   独立启用/禁用 `ddddocr` (`captcha_enable_ddddocr`) 和 AI (`captcha_enable_ai`)。
+    *   配置 `ddddocr` 的最大识别尝试次数 (`ddddocr_max_attempts`)。
+*   🔧 **优化:** 改进 `CaptchaSolver` 中 `ddddocr` 的导入和初始化逻辑，实现按需加载。
+*   📝 **修正:** 调整 `app.py` 中的日志记录，使其在验证码识别时输出更通用的提示，而不是固定显示 "AI"。
+
+**v1.0.0 (初始版本)**
+
+*   🚀 实现基于 AI 的锐捷设备保修期批量查询和结果回写功能。
+*   🔌 支持配置多个 AI 渠道 (Gemini, OpenAI 兼容等) 并按顺序尝试，实现故障转移。
+*   ⚡ 包含 AI 渠道可用性测试功能。
+*   🚗 实现 ChromeDriver 的自动查找、下载、复制和缓存清理。
+*   💪 包含可配置的查询重试、验证码重试、查询延时。
+*   📊 增强表格解析和错误检查的鲁棒性。
+*   💾 实现基于 `save_interval` 的智能保存机制。
+*   ✨ 自动清理 AI 返回的验证码文本。
+*   📜 支持通过配置文件进行详细的日志记录设置，包括文件轮转。
 
 ## 🤝 贡献与反馈
 

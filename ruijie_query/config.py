@@ -119,3 +119,29 @@ class ConfigManager:
     def get_config(self):
         """返回完整的 configparser 对象"""
         return self.config
+
+    def get_captcha_config(self):
+        """获取验证码识别相关配置"""
+        captcha_config = {}
+        if "CaptchaSettings" in self.config:
+            captcha_section = self.config["CaptchaSettings"]
+            captcha_config["primary_solver"] = captcha_section.get(
+                "captcha_primary_solver", "ddddocr" # 默认 ddddocr
+            ).lower()
+            captcha_config["enable_ddddocr"] = captcha_section.getboolean(
+                "captcha_enable_ddddocr", True # 默认启用
+            )
+            captcha_config["enable_ai"] = captcha_section.getboolean(
+                "captcha_enable_ai", True # 默认启用
+            )
+            captcha_config["ddddocr_max_attempts"] = captcha_section.getint(
+                "ddddocr_max_attempts", 3 # 默认 3 次
+            )
+        else:
+            # 提供默认验证码配置
+            captcha_config["primary_solver"] = "ddddocr"
+            captcha_config["enable_ddddocr"] = True
+            captcha_config["enable_ai"] = True
+            captcha_config["ddddocr_max_attempts"] = 3
+            print("警告：config.ini 中未找到 [CaptchaSettings] section，使用默认验证码配置。")
+        return captcha_config
