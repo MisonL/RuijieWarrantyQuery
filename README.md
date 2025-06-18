@@ -1,10 +1,13 @@
+<div align="center">
+
 # ✨ 锐捷网络设备保修期批量查询工具 ✨
 
 [![Version](https://img.shields.io/badge/Version-v1.1.0-blue)](https://github.com/MisonL/RuijieWarrantyQuery/releases/tag/v1.1.0) <!-- 假设你的 GitHub 仓库是 MisonL/RuijieWarrantyQuery -->
 [![Python Version](https://img.shields.io/badge/Python-3.6%2B-blue)](https://www.python.org/downloads/)
 [![Dependencies](https://img.shields.io/badge/Dependencies-requirements.txt-brightgreen)](requirements.txt)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![License (中文)](https://img.shields.io/badge/License-MIT%20(中文)-yellow)](LICENSE.zh-CN.md)
+
+</div>
 
 ## 🚀 项目简介
 
@@ -12,7 +15,7 @@
 
 **锐捷网络设备保修期批量查询工具** 应运而生！这是一个强大的 Python 自动化工具，旨在帮助您轻松批量查询锐捷网络设备的保修信息。本程序全程使用AI编码，AI模型使用gemini-2.5-pro-exp-03-25、gemini-2.5-flash-preview-04-17:thinking。
 
-**核心功能：**
+## 核心功能
 
 -   📄 **批量读取：** 从 Excel 文件中读取待查询的序列号列表。
 -   🌐 **自动化查询：** 自动访问锐捷官网查询页面。
@@ -32,13 +35,30 @@
 
 ---
 
-⚠️ **重要提示：** 使用通用 AI API 处理验证码可能存在准确率和稳定性问题，且通常需要付费。请在使用前仔细阅读您选择的 AI 服务提供商的条款和定价，并自行承担潜在的风险。
+## ▶️ 运行程序
+
+在完成 `config.ini` 配置后，打开终端或命令行界面，导航到项目根目录，然后运行以下命令启动程序：
+
+```bash
+python main.py
+```
+
+程序将开始读取 Excel 文件，逐个查询序列号，并将结果回写到同一个 Excel 文件中。查询进度和详细信息将输出到控制台和日志文件（如果配置了）。
+
+## ⚠️ 注意事项
+
+*   请确保您的网络连接稳定。
+*   查询过程中请勿关闭浏览器窗口，除非程序完成或出现错误。
+*   如果查询量较大，程序运行时间可能会比较长。
+*   如果遇到错误，请查看日志输出（控制台和/或日志文件）和 Excel 文件中的“查询状态”列，以获取错误信息。您可能需要根据错误信息调整代码（特别是 `ruijie_query/page_objects.py` 中网页元素定位和结果解析部分）。
+*   程序会检查 Excel 文件中“查询状态”列，如果该列为空或不为“成功”，则会尝试重新查询该序列号（根据配置的 `max_query_attempts`），支持中断后继续运行。**已优化验证码提交错误后的重试逻辑，能更准确、更快速地处理验证码刷新情况。**
+*   请再次注意使用通用 AI API 服务的风险和费用。
+*   **重要：** `ruijie_query/page_objects.py` 文件中的网页元素定位器、结果解析逻辑 (`parse_query_result` 方法，**现已增强为动态解析表头**) 和错误检查逻辑 (`_check_error_message` 方法，**已增强**) 需要根据锐捷官网实际的页面结构进行手动完善和测试。代码中已添加 `TODO` 注释提示这些位置。
+*   **WebDriver 管理：** 程序现在会优先使用您在 `config.ini` 或项目 `drivers` 目录中指定的 ChromeDriver。如果都找不到，它会自动下载驱动，将其复制到项目 `drivers` 目录，使用该副本，并使用该副本，并尝试删除缓存。
+*   **保存机制：** 程序现在根据 `config.ini` 中的 `save_interval` 配置来保存 Excel 文件，避免了不必要的频繁写入。
+*   **ddddocr 使用 (v1.1.0 新增):** 如果您选择启用 `ddddocr`，请确保已通过 `pip install -r requirements.txt` 或 `pip install ddddocr` 安装了该库。程序会根据 `[CaptchaSettings]` 中的配置决定是否以及何时使用 ddddocr。
 
 ---
-
-## 🏗️ 软件架构
-
-详细的软件架构设计请参考 [ruijie_query_plan.md](ruijie_query_plan.md)。程序已按功能拆分为不同的类，提高了代码的可读性和可维护性。
 
 ## 🛠️ 环境搭建
 
@@ -212,52 +232,13 @@
         *   `captcha_enable_ai`: 是否启用 AI 识别。可选值为 `True` 或 `False`。默认为 `True`。如果设为 `False`，即使 `captcha_primary_solver` 设为 `ai`，也会跳过 AI 识别。
         *   `ddddocr_max_attempts`: 使用 ddddocr 识别单个验证码图片时的最大尝试次数。默认为 `3`。
 
-## ▶️ 运行程序
+## 🏗️ 软件架构
 
-在完成 `config.ini` 配置后，打开终端或命令行界面，导航到项目根目录，然后运行以下命令启动程序：
-
-```bash
-python main.py
-```
-
-程序将开始读取 Excel 文件，逐个查询序列号，并将结果回写到同一个 Excel 文件中。查询进度和详细信息将输出到控制台和日志文件（如果配置了）。
-
-## ⚠️ 注意事项
-
-*   请确保您的网络连接稳定。
-*   查询过程中请勿关闭浏览器窗口，除非程序完成或出现错误。
-*   如果查询量较大，程序运行时间可能会比较长。
-*   如果遇到错误，请查看日志输出（控制台和/或日志文件）和 Excel 文件中的“查询状态”列，以获取错误信息。您可能需要根据错误信息调整代码（特别是 `ruijie_query/page_objects.py` 中网页元素定位和结果解析部分）。
-*   程序会检查 Excel 文件中“查询状态”列，如果该列为空或不为“成功”，则会尝试重新查询该序列号（根据配置的 `max_query_attempts`），支持中断后继续运行。**已优化验证码提交错误后的重试逻辑，能更准确、更快速地处理验证码刷新情况。**
-*   请再次注意使用通用 AI API 服务的风险和费用。
-*   **重要：** `ruijie_query/page_objects.py` 文件中的网页元素定位器、结果解析逻辑 (`parse_query_result` 方法，**现已增强为动态解析表头**) 和错误检查逻辑 (`_check_error_message` 方法，**已增强**) 需要根据锐捷官网实际的页面结构进行手动完善和测试。代码中已添加 `TODO` 注释提示这些位置。
-*   **WebDriver 管理：** 程序现在会优先使用您在 `config.ini` 或项目 `drivers` 目录中指定的 ChromeDriver。如果都找不到，它会自动下载驱动，将其复制到项目 `drivers` 目录，使用该副本，并尝试删除缓存。
-*   **保存机制：** 程序现在根据 `config.ini` 中的 `save_interval` 配置来保存 Excel 文件，避免了不必要的频繁写入。
-*   **ddddocr 使用 (v1.1.0 新增):** 如果您选择启用 `ddddocr`，请确保已通过 `pip install -r requirements.txt` 或 `pip install ddddocr` 安装了该库。程序会根据 `[CaptchaSettings]` 中的配置决定是否以及何时使用 ddddocr。
+详细的软件架构设计请参考 [ruijie_query_plan.md](ruijie_query_plan.md)。程序已按功能拆分为不同的类，提高了代码的可读性和可维护性。
 
 ## 📝 版本历史
 
-**v1.1.0 (2025-04-23)**
-
-*   ✨ **新增:** 集成 `ddddocr` 本地验证码识别库。
-*   ⚙️ **新增:** 在 `config.ini` 中添加 `[CaptchaSettings]` 配置节，允许用户：
-    *   选择优先使用的验证码识别器 (`captcha_primary_solver`: `ddddocr` 或 `ai`)。
-    *   独立启用/禁用 `ddddocr` (`captcha_enable_ddddocr`) 和 AI (`captcha_enable_ai`)。
-    *   配置 `ddddocr` 的最大识别尝试次数 (`ddddocr_max_attempts`)。
-*   🔧 **优化:** 改进 `CaptchaSolver` 中 `ddddocr` 的导入和初始化逻辑，实现按需加载。
-*   📝 **修正:** 调整 `app.py` 中的日志记录，使其在验证码识别时输出更通用的提示，而不是固定显示 "AI"。
-
-**v1.0.0 (初始版本)**
-
-*   🚀 实现基于 AI 的锐捷设备保修期批量查询和结果回写功能。
-*   🔌 支持配置多个 AI 渠道 (Gemini, OpenAI 兼容等) 并按顺序尝试，实现故障转移。
-*   ⚡ 包含 AI 渠道可用性测试功能。
-*   🚗 实现 ChromeDriver 的自动查找、下载、复制和缓存清理。
-*   💪 包含可配置的查询重试、验证码重试、查询延时。
-*   📊 增强表格解析和错误检查的鲁棒性。
-*   💾 实现基于 `save_interval` 的智能保存机制。
-*   ✨ 自动清理 AI 返回的验证码文本。
-*   📜 支持通过配置文件进行详细的日志记录设置，包括文件轮转。
+详细的版本历史请参考 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 🤝 贡献与反馈
 
@@ -268,4 +249,4 @@ python main.py
 
 ## 📜 许可证
 
-本项目采用 [MIT 许可证](LICENSE) / [MIT 许可证 (中文)](LICENSE.zh-CN.md) 授权。
+本项目采用 [MIT 许可证](LICENSE) 授权。
