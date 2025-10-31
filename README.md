@@ -93,8 +93,6 @@ channel_2_api_key = sk-your-real-openai-key
 |------|------|
 | [🔧 配置说明](https://github.com/MisonL/RuijieWarrantyQuery#配置说明) | config.ini 详细参数 |
 | [📋 完整变更](CHANGELOG.md) | v1.1.0 → v2.0.0 更新日志 |
-| [🚀 发布说明](RELEASE_NOTES_v2.0.0.md) | v2.0.0 重大特性详解 |
-| [⚡ 性能优化](PERFORMANCE_OPTIMIZATION_SUMMARY.md) | 95%性能提升技术细节 |
 
 ## 🏆 v2.0.0 重大更新
 
