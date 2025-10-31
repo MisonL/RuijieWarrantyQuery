@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import Dict, Optional, Any, List
 
 # --- 数据处理类 ---
 import logging  # 导入 logging 模块
@@ -7,18 +8,18 @@ import logging  # 导入 logging 模块
 # --- 数据处理类 ---
 class DataManager:
     def __init__(
-        self, file_path, sheet_name, sn_column, result_columns, logger=None
-    ):  # 添加 logger 参数
-        self.file_path = file_path
-        self.sheet_name = sheet_name
-        self.sn_column = sn_column
-        self.result_columns = result_columns
-        self.df = None
+        self, file_path: str, sheet_name: str, sn_column: str, result_columns: Dict[str, str], logger=None
+    ):  # 添加类型注释
+        self.file_path: str = file_path
+        self.sheet_name: str = sheet_name
+        self.sn_column: str = sn_column
+        self.result_columns: Dict[str, str] = result_columns
+        self.df: Optional[pd.DataFrame] = None  # 添加类型注释
         self.logger = logger or logging.getLogger(
             __name__
         )  # 使用传入的 logger 或创建新的
 
-    def load_data(self):
+    def load_data(self) -> Optional[pd.DataFrame]:
         """
         从Excel文件加载数据，并准备结果列。
         """
@@ -53,7 +54,7 @@ class DataManager:
             self.logger.error(f"读取Excel文件时发生错误: {e}", exc_info=True)
             return None
 
-    def save_data(self):
+    def save_data(self) -> None:
         """
         将DataFrame保存到Excel文件。
         """
@@ -77,7 +78,7 @@ class DataManager:
         else:
             self.logger.warning("DataFrame 为空，无需保存。")
 
-    def update_result(self, index, results):
+    def update_result(self, index: Any, results: Dict[str, Any]) -> None:
         """
         更新DataFrame中指定行的查询结果。
         """
@@ -94,8 +95,8 @@ class DataManager:
             self.logger.warning(f"警告：尝试更新不存在的行索引 {index}。")
 
     def get_unqueried_serial_numbers(
-        self, sn_column_name, status_column_name="查询状态"
-    ):
+        self, sn_column_name: str, status_column_name: str = "查询状态"
+    ) -> List[tuple]:
         """
         获取DataFrame中查询状态不是“成功”的序列号及其索引。
         """
