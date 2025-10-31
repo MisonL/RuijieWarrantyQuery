@@ -3,7 +3,7 @@
 锐捷网络设备保修期批量查询工具包
 """
 
-__version__ = "1.1.0"
+__version__ = "2.0.0"
 
 # 导入主要类和功能
 from .core.app import RuijieQueryApp

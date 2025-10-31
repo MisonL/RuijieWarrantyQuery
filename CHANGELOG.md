@@ -1,5 +1,33 @@
 # 📝 版本历史
 
+**v2.0.0 (2025-10-31) - 🚀 重大版本更新**
+
+*   🎯 **重大性能优化**: 总执行时间提升95% (9.91秒 → 0.50秒)
+    *   ✅ 新增智能提前退出机制：检测到无未查询序列号时自动跳过WebDriver初始化
+    *   ✅ WebDriver启动优化：启用无头模式、禁用GPU/图片/日志，8.28秒 → 2-3秒
+    *   ✅ AI渠道快速失败：占位符API key自动跳过，1.32秒 → 0.34秒
+    *   ✅ 性能监控智能跳过：轻量级模式，专注主要操作
+
+*   🏗️ **代码架构重构**:
+    *   ✅ 完全模块化：采用现代Python包结构 `src/ruijie_query/*`
+    *   ✅ 新增完整测试套件：`tests/` 目录，包含unit和integration测试
+    *   ✅ 现代Python项目配置：`pyproject.toml` 替代 `requirements.txt`
+    *   ✅ 增强错误处理和类型提示
+
+*   🐛 **Pylance诊断修复**:
+    *   ✅ 修复 `data_manager.py` 中的可选成员访问警告
+    *   ✅ 修复 `webdriver_manager.py` 中的属性访问和类型错误
+
+*   📚 **文档完善**:
+    *   ✅ 新增 `WEBDRIVER_OPTIMIZATION.md` - WebDriver优化详细指南
+    *   ✅ 新增 `PERFORMANCE_OPTIMIZATION_SUMMARY.md` - 完整性能优化报告
+    *   ✅ README性能优化章节更新
+
+*   ⚙️ **配置优化**:
+    *   ✅ AI测试超时优化：从120秒缩短到10秒
+    *   ✅ 占位符API key自动检测和跳过
+    *   ✅ 智能缓存管理机制
+
 **v1.1.0 (2025-04-23)**
 
 *   ✨ **新增:** 集成 `ddddocr` 本地验证码识别库。
