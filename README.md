@@ -27,8 +27,9 @@
 ## 🚀 快速开始
 
 ```bash
-# 1. 安装依赖
-pip install -r requirements.txt
+# 1. 安装依赖 (推荐uv，性能更快)
+uv pip install -r requirements.txt
+# 或使用传统pip: pip install -r requirements.txt
 
 # 2. 配置config.ini（填入真实API密钥）
 # 3. 运行
@@ -36,6 +37,16 @@ python main.py
 ```
 
 **就这3步！** 其他配置都有默认值，开箱即用。
+
+## 🔧 技术方案
+
+| 技术 | 用途 | 优势 |
+|------|------|------|
+| **Selenium** | 网页自动化 | 稳定可靠，生态成熟 |
+| **ddddocr** | 本地验证码识别 | 无需网络，本地处理 |
+| **AI服务** | 云端验证码识别 | 准确率高，支持多种模型 |
+| **pandas** | Excel数据处理 | 简单易用，功能强大 |
+| **webdriver-manager** | 浏览器驱动管理 | 自动下载，版本兼容 |
 
 ## 📈 性能对比
 
