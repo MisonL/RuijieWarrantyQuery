@@ -1,6 +1,6 @@
-# ⚡ 锐捷保修查询工具
-
 <div align="center">
+
+# ⚡ 锐捷保修查询工具
 
 [![v2.0.0](https://img.shields.io/badge/Version-v2.0.0-blue)](https://github.com/MisonL/RuijieWarrantyQuery)
 [![Python](https://img.shields.io/badge/Python-3.8+-green)](https://python.org)
